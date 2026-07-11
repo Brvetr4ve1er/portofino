@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dev">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Developer × Artist — portfolio and links">
+<meta property="og:title" content="brvetr4ve1er — Developer × Artist">
+<meta property="og:description" content="Code that feels. Art that computes. All my links in one place.">
+<title>brvetr4ve1er — Developer × Artist</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THEME TOKENS — the whole personality of the page lives here.
+     data-mode="dev"  → terminal night, cyan/green, monospace voice
+     data-mode="art"  → gallery dusk, coral/gold, serif voice
+     ============================================================ */
+  :root {
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    --radius: 18px;
+  }
+  html[data-mode="dev"] {
+    --bg: #0a0e14;
+    --bg-soft: #0f1520;
+    --ink: #e6edf3;
+    --ink-dim: #8b98a9;
+    --accent: #5eead4;
+    --accent-2: #60a5fa;
+    --accent-3: #a78bfa;
+    --card: rgba(148, 163, 184, 0.06);
+    --card-border: rgba(148, 163, 184, 0.14);
+    --card-hover: rgba(94, 234, 212, 0.08);
+    --glow: rgba(94, 234, 212, 0.35);
+    --font-display: "JetBrains Mono", ui-monospace, monospace;
+    --font-body: "Space Grotesk", system-ui, sans-serif;
+    --tag-quote: "// ";
+  }
+  html[data-mode="art"] {
+    --bg: #16090f;
+    --bg-soft: #1f0d15;
+    --ink: #f8ede4;
+    --ink-dim: #b39a92;
+    --accent: #fb7185;
+    --accent-2: #fbbf24;
+    --accent-3: #e879f9;
+    --card: rgba(251, 191, 36, 0.05);
+    --card-border: rgba(251, 113, 133, 0.18);
+    --card-hover: rgba(251, 113, 133, 0.09);
+    --glow: rgba(251, 113, 133, 0.35);
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Fraunces", Georgia, serif;
+    --tag-quote: "“";
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    transition: background 0.9s var(--ease), color 0.9s var(--ease);
+  }
+
+  /* Generative background canvas */
+  #field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: block;
+  }
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 90% at 50% 0%, transparent 40%, var(--bg) 100%);
+    transition: background 0.9s var(--ease);
+  }
+
+  main {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 8vh, 5.5rem) 1.4rem 4rem;
+  }
+
+  /* ------- mode toggle ------- */
+  .mode-toggle {
+    position: relative;
+    margin: 0 auto 2.6rem;
+    display: flex;
+    width: max-content;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+    transition: border-color 0.9s var(--ease), background 0.9s var(--ease);
+  }
+  .mode-toggle button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--ink-dim);
+    font: 600 0.78rem/1 var(--font-body);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.72rem 1.35rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: color 0.5s var(--ease);
+  }
+  .mode-toggle button[aria-pressed="true"] { color: var(--bg); }
+  .mode-toggle .thumb {
+    position: absolute;
+    top: 4px; bottom: 4px; left: 4px;
+    width: calc(50% - 4px);
+    border-radius: 999px;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    transition: transform 0.55s var(--ease), background 0.9s var(--ease);
+  }
+  html[data-mode="art"] .mode-toggle .thumb { transform: translateX(100%); }
+
+  /* ------- hero ------- */
+  .hero { text-align: center; }
+
+  .avatar-ring {
+    width: 118px; height: 118px;
+    margin: 0 auto 1.4rem;
+    border-radius: 50%;
+    padding: 3px;
+    background: conic-gradient(from 180deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent));
+    animation: spin 14s linear infinite;
+    transition: background 0.9s var(--ease);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .avatar-ring .inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    animation: spin 14s linear infinite reverse; /* keep image upright */
+  }
+  .avatar-ring img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .avatar-fallback {
+    font: 700 2.2rem var(--font-display);
+    background: linear-gradient(120deg, var(--accent), var(--accent-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 5.5vw, 2.35rem);
+    letter-spacing: -0.015em;
+    transition: font-family 0.2s;
+  }
+  h1 .at { color: var(--accent); transition: color 0.9s var(--ease); }
+
+  .role {
+    margin-top: 0.55rem;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: color 0.9s var(--ease);
+  }
+  .role .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--glow);
+    transition: background 0.9s var(--ease), box-shadow 0.9s var(--ease);
+  }
+
+  .bio {
+    margin: 1.35rem auto 0;
+    max-width: 44ch;
+    color: var(--ink-dim);
+    font-size: 1.02rem;
+    line-height: 1.65;
+    transition: color 0.9s var(--ease);
+  }
+  .bio::before { content: var(--tag-quote); color: var(--accent); transition: color 0.9s var(--ease); }
+
+  /* mode-specific taglines cross-fade */
+  .bio span { display: none; }
+  html[data-mode="dev"] .bio .say-dev { display: inline; }
+  html[data-mode="art"] .bio .say-art { display: inline; }
+
+  /* ------- links ------- */
+  .links {
+    margin-top: 2.8rem;
+    display: grid;
+    gap: 0.85rem;
+    list-style: none;
+  }
+  .links a {
+    display: grid;
+    grid-template-columns: 46px 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--card-border);
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      transform 0.35s var(--ease),
+      background 0.35s var(--ease),
+      border-color 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
+  }
+  .links a:hover, .links a:focus-visible {
+    transform: translateY(-3px);
+    background: var(--card-hover);
+    border-color: var(--accent);
+    box-shadow: 0 12px 38px -14px var(--glow);
+    outline: none;
+  }
+  .links a:active { transform: translateY(-1px) scale(0.995); }
+
+  .link-icon {
+    width: 46px; height: 46px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(140deg, var(--accent), var(--accent-2));
+    color: var(--bg);
+    transition: background 0.9s var(--ease);
+  }
+  .link-icon svg { width: 22px; height: 22px; }
+
+  .link-text .title {
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+  .link-text .sub {
+    margin-top: 2px;
+    font-size: 0.82rem;
+    color: var(--ink-dim);
+    transition: color 0.9s var(--ease);
+  }
+  .link-arrow {
+    color: var(--ink-dim);
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    transition: transform 0.35s var(--ease), color 0.35s var(--ease);
+  }
+  .links a:hover .link-arrow { transform: translateX(4px); color: var(--accent); }
+
+  /* ------- now strip ------- */
+  .now {
+    margin-top: 2.6rem;
+    padding: 1.05rem 1.2rem;
+    border-radius: var(--radius);
+    border: 1px dashed var(--card-border);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: border-color 0.9s var(--ease), color 0.9s var(--ease);
+  }
+  .now .pulse {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+    transition: background 0.9s var(--ease);
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--glow); }
+    50% { box-shadow: 0 0 0 7px transparent; }
+  }
+
+  footer {
+    margin-top: 3rem;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+    transition: color 0.9s var(--ease);
+  }
+  footer .heart { color: var(--accent); transition: color 0.9s var(--ease); }
+
+  /* reveal-on-load choreography */
+  .reveal { opacity: 0; transform: translateY(14px); animation: rise 0.8s var(--ease) forwards; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<main>
+  <!-- ======== MODE TOGGLE ======== -->
+  <div class="mode-toggle reveal" role="group" aria-label="Theme mode" style="animation-delay:.05s">
+    <div class="thumb" aria-hidden="true"></div>
+    <button type="button" id="btn-dev" aria-pressed="true">&lt;dev&gt;</button>
+    <button type="button" id="btn-art" aria-pressed="false">artist</button>
+  </div>
+
+  <!-- ======== HERO ======== -->
+  <header class="hero">
+    <div class="avatar-ring reveal" style="animation-delay:.12s">
+      <div class="inner">
+        <img src="https://github.com/brvetr4ve1er.png" alt="Avatar"
+             onerror="this.remove(); document.getElementById('avatar-fb').style.display='block'">
+        <span id="avatar-fb" class="avatar-fallback" style="display:none">B_</span>
+      </div>
+    </div>
+
+    <h1 class="reveal" style="animation-delay:.2s"><span class="at">@</span>brvetr4ve1er</h1>
+
+    <p class="role reveal" style="animation-delay:.26s">
+      <span class="dot"></span> Developer <span aria-hidden="true">×</span> Artist <span class="dot"></span>
+    </p>
+
+    <p class="bio reveal" style="animation-delay:.32s">
+      <span class="say-dev">I write code the way painters mix pigment — iterating until the logic sings. Shipping software, generative art & everything between.</span>
+      <span class="say-art">Pixels, pigment and procedures. I make art with algorithms and software with soul — every canvas starts as an empty file.</span>
+    </p>
+  </header>
+
+  <!-- ======== LINKS — edit these! ======== -->
+  <ul class="links">
+    <li class="reveal" style="animation-delay:.40s">
+      <a href="https://github.com/brvetr4ve1er" target="_blank" rel="noopener">
+        <span class="link-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.54-3.87-1.54-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.75 2.69 1.25 3.34.95.1-.74.4-1.25.72-1.53-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.41-2.68 5.38-5.24 5.66.41.36.77 1.05.77 2.13v3.16c0 .31.2.67.8.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>
+        </span>
+        <span class="link-text">
+          <span class="title">GitHub</span>
+          <span class="sub">Open source, experiments & this very page</span>
+        </span>
+        <span class="link-arrow" aria-hidden="true">→</span>
+      </a>
+    </li>
+
+    <li class="reveal" style="animation-delay:.46s">
+      <a href="#projects" target="_blank" rel="noopener">
+        <span class="link-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </span>
+        <span class="link-text">
+          <span class="title">Dev Projects</span>
+          <span class="sub">Apps, tools & things that compile</span>
+        </span>
+        <span class="link-arrow" aria-hidden="true">→</span>
+      </a>
+    </li>
+
+    <li class="reveal" style="animation-delay:.52s">
+      <a href="#gallery" target="_blank" rel="noopener">
+        <span class="link-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M12 2a10 10 0 1 0 10 10c0-1.7-1.3-3-3-3h-2a3 3 0 0 1-3-3c0-1-.5-2-1-2.5A9.5 9.5 0 0 0 12 2Z"/><circle cx="7.5" cy="10.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="9.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <span class="link-text">
+          <span class="title">Art Gallery</span>
+          <span class="sub">Generative pieces, illustration & studies</span>
+        </span>
+        <span class="link-arrow" aria-hidden="true">→</span>
+      </a>
+    </li>
+
+    <li class="reveal" style="animation-delay:.58s">
+      <a href="#instagram" target="_blank" rel="noopener">
+        <span class="link-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <span class="link-text">
+          <span class="title">Instagram</span>
+          <span class="sub">Work-in-progress shots & studio life</span>
+        </span>
+        <span class="link-arrow" aria-hidden="true">→</span>
+      </a>
+    </li>
+
+    <li class="reveal" style="animation-delay:.64s">
+      <a href="mailto:brvetr4veler@gmail.com">
+        <span class="link-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 7L22 7"/></svg>
+        </span>
+        <span class="link-text">
+          <span class="title">Email Me</span>
+          <span class="sub">Commissions, collabs & good ideas</span>
+        </span>
+        <span class="link-arrow" aria-hidden="true">→</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- ======== NOW ======== -->
+  <p class="now reveal" style="animation-delay:.72s">
+    <span class="pulse"></span>
+    <span>now: building interactive canvases &amp; open to freelance work</span>
+  </p>
+
+  <footer class="reveal" style="animation-delay:.8s">
+    crafted with <span class="heart">♥</span> — code is a brush
+  </footer>
+</main>
+
+<script>
+/* ==============================================================
+   Generative background — one particle field, two personalities.
+   dev mode : particles snap to a grid-flavored flow, cool hues
+   art mode : particles drift like wet paint strokes, warm hues
+   ============================================================== */
+(() => {
+  const canvas = document.getElementById('field');
+  const ctx = canvas.getContext('2d');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const PALETTES = {
+    dev: ['94,234,212', '96,165,250', '167,139,250'],
+    art: ['251,113,133', '251,191,36', '232,121,249'],
+  };
+
+  let W, H, particles = [];
+  const COUNT = Math.min(90, Math.floor(innerWidth / 14));
+
+  function mode() { return document.documentElement.dataset.mode; }
+
+  function resize() {
+    W = canvas.width = innerWidth * devicePixelRatio;
+    H = canvas.height = innerHeight * devicePixelRatio;
+    canvas.style.width = innerWidth + 'px';
+    canvas.style.height = innerHeight + 'px';
+  }
+
+  function spawn() {
+    particles = Array.from({ length: COUNT }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: 0, vy: 0,
+      seed: Math.random() * 1000,
+      size: (Math.random() * 1.6 + 0.6) * devicePixelRatio,
+      hue: Math.floor(Math.random() * 3),
+    }));
+  }
+
+  // pseudo-noise flow angle
+  function angle(x, y, t, m) {
+    const s = m === 'dev' ? 0.0018 : 0.0009;
+    const a = Math.sin(x * s + t * 0.0003) + Math.cos(y * s - t * 0.0002);
+    if (m === 'dev') {
+      // quantize to 8 directions → circuit-board feel
+      return Math.round(a * 4) * (Math.PI / 4);
+    }
+    return a * Math.PI; // smooth, painterly
+  }
+
+  let last = 0;
+  function frame(t) {
+    const m = mode();
+    const fade = m === 'dev' ? 0.09 : 0.045; // art mode leaves longer paint trails
+    ctx.fillStyle = getComputedStyle(document.body).backgroundColor
+      .replace('rgb', 'rgba').replace(')', `, ${fade})`);
+    ctx.fillRect(0, 0, W, H);
+
+    const speed = (m === 'dev' ? 0.9 : 0.55) * devicePixelRatio;
+    for (const p of particles) {
+      const a = angle(p.x, p.y, t + p.seed * 50, m);
+      p.vx = p.vx * 0.9 + Math.cos(a) * speed * 0.1;
+      p.vy = p.vy * 0.9 + Math.sin(a) * speed * 0.1;
+      p.x += p.vx; p.y += p.vy;
+
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(${PALETTES[m][p.hue]}, ${m === 'dev' ? 0.5 : 0.4})`;
+      ctx.arc(p.x, p.y, p.size * (m === 'art' ? 1.6 : 1), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (!reduced) requestAnimationFrame(frame);
+  }
+
+  addEventListener('resize', () => { resize(); spawn(); }, { passive: true });
+  resize(); spawn();
+  if (reduced) { frame(0); } else { requestAnimationFrame(frame); }
+
+  /* -------- mode toggle wiring -------- */
+  const btnDev = document.getElementById('btn-dev');
+  const btnArt = document.getElementById('btn-art');
+  function setMode(m) {
+    document.documentElement.dataset.mode = m;
+    btnDev.setAttribute('aria-pressed', String(m === 'dev'));
+    btnArt.setAttribute('aria-pressed', String(m === 'art'));
+    try { localStorage.setItem('mode', m); } catch {}
+    // hard clear so trails from the old palette don't linger
+    ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
+    ctx.fillRect(0, 0, W, H);
+  }
+  btnDev.addEventListener('click', () => setMode('dev'));
+  btnArt.addEventListener('click', () => setMode('art'));
+  try {
+    const saved = localStorage.getItem('mode');
+    if (saved === 'art' || saved === 'dev') setMode(saved);
+  } catch {}
+})();
+</script>
+</body>
+</html>
