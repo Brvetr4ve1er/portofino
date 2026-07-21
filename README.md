@@ -1,38 +1,59 @@
-# portofino — Developer × Artist link page
+# Numidea Labs — landing page with 4 selectable layouts
 
-A single-file, zero-dependency portfolio / linktree with a split personality:
-flip the toggle and the whole page morphs between **`<dev>`** (terminal night,
-cyan/green, monospace, circuit-flavored particle field) and **artist**
-(gallery dusk, coral/gold, serif type, painterly flowing brush trails).
+Zero-dependency static landing page (hand-written HTML/CSS/vanilla JS, no build
+step) implementing the four design directions from the
+*Landing page & portfolio improvements* handoff. All four ship together and are
+selectable with the **LAYOUT** switcher pinned bottom-right — the choice is
+saved in `localStorage` and can be deep-linked with `?layout=2a|2b|2c|2d`.
 
-Everything lives in [`index.html`](index.html) — no build step, no framework.
+| Key | Layout | Signature |
+|-----|--------|-----------|
+| `2a` | **Proof-First Cinema** | featured work IS the hero: auto-rotating project frame, case strips (PROBLEM → BUILT → RESULT), case-file modal, services accordion, inline résumé |
+| `2b` | **Story Scroll** | 5 chapters (Idea → Build → Proof → Builder → Your Turn) with a gold scroll-progress bar and a horizontal scroll-snap film strip |
+| `2c` | **Gallery-First** | compact hero, filterable bento portfolio grid, in-page case-study panel with "next case" cycling |
+| `2d` | **Atelier Split** | sticky identity rail (brand + founder + CTA always visible) with scrollspy, full-bleed project plates on the right |
 
-## Features
+## Files
 
-- 🎨 Generative canvas background whose *algorithm* changes with the theme
-  (quantized 8-direction flow in dev mode, smooth paint-stroke flow in art mode)
-- 🌓 Dev/Artist mode toggle, remembered in `localStorage`
-- ✨ Staggered reveal animations, glassmorphism link cards, animated gradient avatar ring
-- ♿ Respects `prefers-reduced-motion`, keyboard-focusable cards, ARIA-labelled toggle
-- 📱 Fully responsive, works as a Linktree replacement
+```
+index.html            all four layouts + the layout switcher
+links.html            personal linktree page (previous home page, preserved)
+assets/styles.css     Arcanum theme tokens + shared components + per-layout styles
+assets/app.js         switcher + all interactions (rotation, modal, accordions,
+                      progress bar, filters, scrollspy, mailto form handoff)
+assets/covers/*.svg   Arcanum-style placeholder covers — replace with real
+                      screenshots (assets/previews/*.webp) as projects go live
+assets/cv_yasser_hamisse_2026.pdf   résumé linked from every layout
+```
 
-## Customize
+## Design tokens
 
-Open `index.html` and edit:
+Defined once at the top of `assets/styles.css` as CSS custom properties, per
+the handoff: `--void #0A1420`, `--navy #0F1E30`, gold `#E6B450` / hover
+`#F4D27A`, teal `#34D0E8`, ice `#EAF1F8`, muted `#9DB2C6`. Typography:
+**Cinzel** (display) · **Geist** (body) · **Geist Mono** (kickers, badges,
+meta) via Google Fonts.
 
-1. **Name & bio** — in the `<header class="hero">` section. There are two bios:
-   `.say-dev` (shown in dev mode) and `.say-art` (shown in art mode).
-2. **Links** — each `<li>` inside `<ul class="links">` is one card:
-   change the `href`, the `.title`, and the `.sub` description.
-   The `#projects`, `#gallery`, `#instagram` hrefs are placeholders — point them
-   at your real URLs.
-3. **Avatar** — currently pulls your GitHub avatar
-   (`https://github.com/brvetr4ve1er.png`); swap the `src` for any image.
-4. **Colors / fonts** — all theme tokens are CSS variables at the top of the
-   `<style>` block, under `html[data-mode="dev"]` and `html[data-mode="art"]`.
-5. **"Now" status** — the dashed strip near the bottom.
+## Honest content rules (from the handoff — keep them)
 
-## Deploy on GitHub Pages
+- **LIVE badge only when a project is genuinely live** (currently only
+  almaflowclim.fr). Everything else stays SOON.
+- Testimonial cards are marked `SAMPLE` — replace with real client quotes or
+  hide them before promoting the page.
+- Stats are real: 5 projects · 4 specialists · 3 languages · <24h · 544,634
+  visa requests analyzed. Don't invent metrics.
 
-Repo **Settings → Pages → Source: Deploy from a branch**, pick your branch and
-`/ (root)`. Your page goes live at `https://<username>.github.io/portofino/`.
+## Known gaps / next steps
+
+- **Form delivery**: the contact forms are front-end only — submitting opens a
+  prefilled email to hello@numidealabs.com. Wiring a real backend (Formspree,
+  Worker, etc.) is the highest-priority functional gap.
+- **i18n**: copy is English; production is meant to be trilingual FR/EN/AR
+  (IBM Plex Sans Arabic + RTL for ع). The FR·EN·ع pill is currently visual.
+- **Images**: swap the SVG covers for real screenshots as each project ships;
+  founder photo is a placeholder monogram.
+
+## Deploy
+
+GitHub Pages: **Settings → Pages → Deploy from a branch**, root folder. No
+build step required.

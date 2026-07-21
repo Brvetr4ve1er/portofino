@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+<defs><radialGradient id="fg" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="#E6B450" stop-opacity=".18"/><stop offset="1" stop-color="#E6B450" stop-opacity="0"/></radialGradient></defs>
+<rect width="400" height="400" fill="#0F1E30"/>
+<rect width="400" height="400" fill="url(#fg)"/>
+<circle cx="200" cy="200" r="196" fill="none" stroke="#E6B450" stroke-opacity=".4" stroke-width="3"/>
+<text x="200" y="238" text-anchor="middle" fill="#EAF1F8" font-family="Georgia,serif" font-size="104" letter-spacing="4" font-weight="bold">MY</text>
+<text x="200" y="300" text-anchor="middle" fill="#9DB2C6" font-family="Menlo,Consolas,monospace" font-size="21" letter-spacing="6">FOUNDER</text>
+</svg>
