@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<defs>
+<pattern id="hex" width="56" height="97" patternUnits="userSpaceOnUse">
+<path d="M28 2 52 16v28L28 58 4 44V16Z" fill="none" stroke="#34D0E8" stroke-opacity=".07"/>
+<path d="M28 60 52 74v22M28 60 4 74v22" fill="none" stroke="#34D0E8" stroke-opacity=".07"/>
+</pattern>
+<radialGradient id="g1" cx="82%" cy="14%" r="55%"><stop offset="0" stop-color="#E6B450" stop-opacity=".16"/><stop offset="1" stop-color="#E6B450" stop-opacity="0"/></radialGradient>
+<radialGradient id="g2" cx="12%" cy="90%" r="55%"><stop offset="0" stop-color="#E6B450" stop-opacity=".10"/><stop offset="1" stop-color="#E6B450" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="800" fill="#0A1420"/>
+<rect width="1200" height="800" fill="url(#hex)"/>
+<rect width="1200" height="800" fill="url(#g1)"/>
+<rect width="1200" height="800" fill="url(#g2)"/>
+<g text-anchor="middle">
+<text x="600" y="352" fill="#E6B450" font-family="Georgia,serif" font-size="60">&#9670;</text>
+<text x="600" y="446" fill="#EAF1F8" font-family="Georgia,serif" font-size="40" letter-spacing="8" font-weight="bold">NOMARA VOYAGES</text>
+<text x="600" y="500" fill="#9DB2C6" font-family="Menlo,Consolas,monospace" font-size="19" letter-spacing="3">travel booking · WhatsApp API</text>
+</g>
+<rect x="24" y="24" width="1152" height="752" rx="18" fill="none" stroke="#E6B450" stroke-opacity=".24"/>
+</svg>
